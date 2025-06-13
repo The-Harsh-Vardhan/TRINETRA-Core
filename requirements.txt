@@ -1,0 +1,25 @@
+# Core Processing
+opencv-python==4.8.0          # Video and image processing
+numpy==1.24.3                 # Numerical computations
+deepface==0.0.79             # Face recognition
+scipy==1.11.1                # Scientific computing
+scikit-learn==1.3.0          # Machine learning utilities
+
+# Frontend
+streamlit==1.24.0            # Web interface
+plotly==5.15.0              # Interactive visualizations
+pandas==2.0.3               # Data manipulation
+
+# Backend
+fastapi==0.100.0            # API framework
+uvicorn==0.22.0             # ASGI server
+motor==3.2.0                # Async MongoDB driver
+pydantic==2.0.2            # Data validation
+python-dotenv==1.0.0        # Environment management
+
+# Development and Testing
+pytest==7.4.0               # Testing framework
+black==23.3.0               # Code formatting
+mypy==1.4.1                # Type checking
+pytest==7.4.0
+black==23.3.0
