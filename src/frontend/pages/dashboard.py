@@ -1,21 +1,31 @@
 import streamlit as st
 import requests
 from datetime import datetime
-import plotly.graph_objects as go
-import plotly.express as px
+from utils.common import StreamlitUtils, ChartUtils, DataUtils
 
 def display_dashboard():
-    st.title("TRINETRA-Core Dashboard")
+    StreamlitUtils.setup_page("Dashboard", "📊")
     
     # Create tabs for different sections
     tabs = st.tabs(["Live Monitoring", "Analytics", "Customer Insights"])
     
     with tabs[0]:  # Live Monitoring
+        st.subheader("🔴 Live Status")
+        
+        # Live metrics using shared utilities
+        live_metrics = {
+            "Current Count": {"value": "25", "delta": "+3"},
+            "Recognition Rate": {"value": "94.2%", "delta": "+1.2%"},
+            "Camera Status": {"value": "3/3 Online", "delta": None}
+        }
+        StreamlitUtils.display_metrics_row(live_metrics)
+        
         col1, col2 = st.columns(2)
         with col1:
             st.subheader("Entrance Traffic")
-            # Placeholder for real-time entrance count
-            st.metric("Current Count", "25", "+3")
+            # Use shared chart utilities for traffic visualization
+            traffic_data = DataUtils.get_mock_data("traffic")[:12]  # Last 12 hours
+            ChartUtils.create_traffic_chart(traffic_data, "Real-time Traffic Flow")
             
         with col2:
             st.subheader("Face Recognition")
@@ -23,34 +33,29 @@ def display_dashboard():
             st.image("https://via.placeholder.com/300x200", caption="Live Feed")
     
     with tabs[1]:  # Analytics
-        st.subheader("Traffic Analytics")
-        # Sample traffic data visualization
-        dates = ["2025-06-{}".format(i) for i in range(1, 8)]
-        traffic = [120, 145, 132, 168, 155, 190, 172]
+        st.subheader("📈 Traffic Analytics")
         
-        fig = px.line(x=dates, y=traffic, 
-                     title="Weekly Traffic Trend",
-                     labels={"x": "Date", "y": "Visitor Count"})
-        st.plotly_chart(fig)
+        # Use shared traffic chart
+        daily_traffic_data = DataUtils.get_mock_data("traffic")
+        ChartUtils.create_traffic_chart(daily_traffic_data, "24-Hour Traffic Trend")
+        
+        # Key metrics using shared utilities
+        analytics_metrics = DataUtils.get_mock_data("metrics")
+        StreamlitUtils.display_metrics_row(analytics_metrics)
         
     with tabs[2]:  # Customer Insights
-        st.subheader("Customer Behavior Analysis")
-        # Sample behavior metrics
-        metrics = {
+        st.subheader("👥 Customer Behavior Analysis")
+        
+        # Sample behavior metrics using shared utilities
+        behavior_metrics = {
             "Average Visit Duration": "45 mins",
             "Most Common Path": "Entrance → Electronics → Checkout",
-            "Peak Hours": "2 PM - 4 PM"
+            "Peak Hours": "2 PM - 4 PM",
+            "Return Rate": "35%"
         }
-        
-        for metric, value in metrics.items():
-            st.metric(metric, value)
+        StreamlitUtils.display_metrics_row(behavior_metrics, columns=2)
 
 def main():
-    st.set_page_config(
-        page_title="TRINETRA-Core",
-        page_icon="🎥",
-        layout="wide"
-    )
     display_dashboard()
 
 if __name__ == "__main__":

@@ -1,0 +1,28 @@
+{
+    "face_recognition": {
+        "path": "datasets/face_recognition",
+        "allowed_formats": [".jpg", ".jpeg", ".png"],
+        "min_face_size": [30, 30],
+        "augmentation": {
+            "enabled": true,
+            "rotation_range": [-15, 15],
+            "brightness_range": [0.8, 1.2]
+        }
+    },
+    "entrance_videos": {
+        "path": "datasets/entrance_videos",
+        "allowed_formats": [".mp4", ".avi"],
+        "min_resolution": [640, 480],
+        "fps": 30
+    },
+    "behavior_samples": {
+        "path": "datasets/behavior_samples",
+        "allowed_formats": [".mp4", ".avi", ".json"],
+        "tracking_data": "datasets/behavior_samples/tracking"
+    },
+    "database": {
+        "embeddings_collection": "face_embeddings",
+        "tracking_collection": "entrance_tracking",
+        "behavior_collection": "behavior_patterns"
+    }
+}

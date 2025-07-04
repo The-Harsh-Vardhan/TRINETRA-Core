@@ -3,6 +3,7 @@ import plotly.express as px
 import pandas as pd
 from datetime import datetime, timedelta
 import requests
+from utils.common import StreamlitUtils, ChartUtils, DataUtils
 
 class CustomerInsights:
     def __init__(self):
@@ -39,7 +40,7 @@ class CustomerInsights:
         }
 
 def display_customer_insights():
-    st.title("Customer Insights")
+    StreamlitUtils.setup_page("Customer Insights", "👥")
     
     insights = CustomerInsights()
     
@@ -49,71 +50,58 @@ def display_customer_insights():
     if customer_id:
         customer_data = insights.get_customer_data(customer_id)
         
-        # Customer Overview
-        st.subheader("Customer Overview")
-        col1, col2 = st.columns(2)
+        # Customer Overview using shared utilities
+        st.subheader("📊 Customer Overview")
         
-        with col1:
-            st.metric("Customer ID", customer_data["customer_id"])
-            st.metric("Average Visit Duration", 
-                     f"{customer_data['preferences']['avg_visit_duration']} mins")
-        
-        with col2:
-            st.metric("Preferred Time", 
-                     customer_data["preferences"]["peak_visit_times"])
-            st.metric("Favorite Sections", 
-                     ", ".join(customer_data["preferences"]["favorite_sections"]))
+        overview_metrics = {
+            "Customer ID": customer_data["customer_id"],
+            "Average Visit Duration": DataUtils.format_duration(customer_data['preferences']['avg_visit_duration'] * 60),
+            "Preferred Time": customer_data["preferences"]["peak_visit_times"],
+            "Favorite Sections": ", ".join(customer_data["preferences"]["favorite_sections"])
+        }
+        StreamlitUtils.display_metrics_row(overview_metrics, columns=2)
         
         # Visit History
-        st.subheader("Visit History")
+        st.subheader("📈 Visit History")
         
         # Convert visit history to DataFrame
         visits_df = pd.DataFrame(customer_data["visit_history"])
         visits_df["date"] = pd.to_datetime(visits_df["date"])
         
-        # Plot visit durations
-        fig_duration = px.line(
-            visits_df,
-            x="date",
-            y="duration",
-            title="Visit Duration Trend",
-            labels={"duration": "Duration (minutes)"}
-        )
-        st.plotly_chart(fig_duration)
+        # Create traffic-style data for visit duration trend
+        visit_trend_data = []
+        for _, row in visits_df.iterrows():
+            visit_trend_data.append({
+                "hour": row["date"].hour,
+                "entries": row["duration"],
+                "exits": 0  # Not applicable for customer visits
+            })
+        
+        # Use shared chart utility
+        ChartUtils.create_traffic_chart(visit_trend_data[::-1], "Visit Duration Trend (Recent First)")
         
         # Recent Visits Table
-        st.subheader("Recent Visits")
+        st.subheader("🕒 Recent Visits")
         
         for visit in customer_data["visit_history"]:
             with st.expander(f"Visit on {visit['date'][:10]}"):
-                st.write(f"Duration: {visit['duration']} minutes")
+                st.write(f"Duration: {DataUtils.format_duration(visit['duration'] * 60)}")
                 st.write("Sections visited:")
                 for section in visit['sections_visited']:
                     st.write(f"- {section}")
         
-        # Behavioral Analysis
-        st.subheader("Behavioral Analysis")
+        # Behavioral Analysis using shared utilities
+        st.subheader("🧠 Behavioral Analysis")
         
-        # Sample behavioral metrics
         behavior_metrics = {
             "Shopping Pattern": "Browser",
             "Price Sensitivity": "Medium",
             "Brand Loyalty": "High",
             "Response to Promotions": "Positive"
         }
-        
-        col1, col2 = st.columns(2)
-        
-        for i, (metric, value) in enumerate(behavior_metrics.items()):
-            with col1 if i % 2 == 0 else col2:
-                st.metric(metric, value)
+        StreamlitUtils.display_metrics_row(behavior_metrics, columns=2)
 
 def main():
-    st.set_page_config(
-        page_title="TRINETRA-Core Customer Insights",
-        page_icon="👤",
-        layout="wide"
-    )
     display_customer_insights()
 
 if __name__ == "__main__":

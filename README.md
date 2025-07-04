@@ -11,6 +11,7 @@ TRINETRA Core is a streamlined version of the TRINETRA retail analytics system, 
 3. **Behavioral Analytics**: Pattern analysis and customer insights generation
 
 ## Project Structure
+
 ```
 TRINETRA-Core/
 ├── src/
@@ -26,18 +27,22 @@ TRINETRA-Core/
 ```
 
 ## Setup Instructions
+
 1. Clone the repository
 2. Install dependencies: `pip install -r requirements.txt`
 3. Run the backend: `cd src/backend && uvicorn main:app --reload`
 4. Run the frontend: `cd src/frontend && streamlit run dashboard.py`
 
 ## Core Features
+
 1. **Entrance Tracking**
+
    - Real-time people counting
    - Multi-camera tracking
    - Customer journey mapping
 
 2. **Face Recognition**
+
    - Customer identification
    - Recognition history
    - Face database management
@@ -48,6 +53,7 @@ TRINETRA-Core/
    - Journey insights
 
 ## Technology Stack
+
 - **Frontend**: Streamlit, Plotly
 - **Backend**: FastAPI, MongoDB
 - **Core Processing**: OpenCV, DeepFace

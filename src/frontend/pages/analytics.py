@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 import pandas as pd
 from datetime import datetime, timedelta
 import requests
+from utils.common import StreamlitUtils, ChartUtils, DataUtils
 
 class Analytics:
     def __init__(self):
@@ -36,82 +37,71 @@ class Analytics:
         }
 
 def display_analytics():
-    st.title("Analytics Dashboard")
+    StreamlitUtils.setup_page("Analytics", "📊")
     
     analytics = Analytics()
     
-    # Date range selection
-    col1, col2 = st.columns(2)
-    with col1:
-        start_date = st.date_input("Start Date", datetime.now() - timedelta(days=7))
-    with col2:
-        end_date = st.date_input("End Date", datetime.now())
+    # Date range selection using shared utilities
+    start_date, end_date = StreamlitUtils.create_time_filter()
     
     # Get traffic data
     traffic_data = analytics.get_traffic_data(start_date, end_date)
     
-    # Traffic Analysis
-    st.subheader("Traffic Analysis")
+    # Traffic Analysis Section
+    st.subheader("🚶 Traffic Analysis")
     
     # Create DataFrame from traffic data
     df = pd.DataFrame(traffic_data["hourly_counts"])
     df["timestamp"] = pd.to_datetime(df["timestamp"])
     
-    # Daily traffic trend
-    daily_traffic = df.set_index("timestamp").resample("D").sum()
-    fig_daily = px.line(
-        daily_traffic,
-        x=daily_traffic.index,
-        y="count",
-        title="Daily Traffic Trend"
-    )
-    st.plotly_chart(fig_daily)
+    # Convert to format expected by ChartUtils
+    hourly_data = []
+    for _, row in df.iterrows():
+        hourly_data.append({
+            "hour": row["timestamp"].hour,
+            "entries": row["count"],
+            "exits": int(row["count"] * 0.8)  # Mock exits data
+        })
     
-    # Hourly pattern
+    # Use shared chart utilities
+    ChartUtils.create_traffic_chart(hourly_data, "Hourly Traffic Pattern")
+    
+    # Hourly pattern bar chart
     hourly_pattern = df.groupby(df["timestamp"].dt.hour)["count"].mean()
-    fig_hourly = px.bar(
-        x=hourly_pattern.index,
-        y=hourly_pattern.values,
-        title="Average Hourly Traffic Pattern",
-        labels={"x": "Hour of Day", "y": "Average Count"}
+    hourly_dict = {f"{hour:02d}:00": count for hour, count in hourly_pattern.items()}
+    ChartUtils.create_bar_chart(
+        hourly_dict, 
+        "Average Hourly Traffic Pattern", 
+        "Hour of Day", 
+        "Average Count"
     )
-    st.plotly_chart(fig_hourly)
     
-    # Key Metrics
-    col1, col2, col3 = st.columns(3)
+    # Key Metrics using shared utilities
+    daily_traffic = df.set_index("timestamp").resample("D").sum()
+    total_traffic = df["count"].sum()
+    avg_daily = daily_traffic["count"].mean()
+    peak_hour = hourly_pattern.idxmax()
     
-    with col1:
-        total_traffic = df["count"].sum()
-        st.metric("Total Traffic", f"{total_traffic:,}")
-        
-    with col2:
-        avg_daily = daily_traffic["count"].mean()
-        st.metric("Average Daily Traffic", f"{avg_daily:,.0f}")
-        
-    with col3:
-        peak_hour = hourly_pattern.idxmax()
-        st.metric("Peak Hour", f"{peak_hour:02d}:00")
+    traffic_metrics = {
+        "Total Traffic": {"value": DataUtils.format_number(total_traffic), "delta": "+12%"},
+        "Average Daily": {"value": DataUtils.format_number(avg_daily), "delta": "+5%"},
+        "Peak Hour": {"value": f"{peak_hour:02d}:00", "delta": None}
+    }
+    StreamlitUtils.display_metrics_row(traffic_metrics)
     
-    # Behavioral Insights
-    st.subheader("Behavioral Insights")
+    # Behavioral Insights Section
+    st.subheader("🧠 Behavioral Insights")
     
-    # Sample behavior metrics
-    behavior_data = {
-        "Average Visit Duration": "45 minutes",
+    # Use shared utilities for behavior metrics
+    behavior_metrics = {
+        "Average Visit Duration": DataUtils.format_duration(2700),  # 45 minutes
         "Most Common Path": "Entrance → Electronics → Checkout",
         "Return Customer Rate": "35%",
         "Peak Shopping Hours": "2 PM - 4 PM"
     }
-    
-    for metric, value in behavior_data.items():
-        st.metric(metric, value)
+    StreamlitUtils.display_metrics_row(behavior_metrics, columns=2)
 
 def main():
-    st.set_page_config(
-        page_title="TRINETRA-Core Analytics",
-        page_icon="📊",
-        layout="wide"
-    )
     display_analytics()
 
 if __name__ == "__main__":

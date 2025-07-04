@@ -1,9 +1,13 @@
 # Core Processing
-opencv-python==4.8.0          # Video and image processing
-numpy==1.24.3                 # Numerical computations
+opencv-python==4.8.0.74       # Video and image processing
+numpy==1.26.0                 # Numerical computations
 deepface==0.0.79             # Face recognition
 scipy==1.11.1                # Scientific computing
 scikit-learn==1.3.0          # Machine learning utilities
+ultralytics==8.0.145         # YOLO object detection
+supervision==0.11.1          # Computer vision tools
+torch==2.0.1                 # Deep learning framework
+torchvision==0.15.2         # Computer vision models
 
 # Frontend
 streamlit==1.24.0            # Web interface
@@ -16,10 +20,26 @@ uvicorn==0.22.0             # ASGI server
 motor==3.2.0                # Async MongoDB driver
 pydantic==2.0.2            # Data validation
 python-dotenv==1.0.0        # Environment management
+python-multipart==0.0.6    # File upload handling
+aiofiles==23.1.0           # Async file operations
 
 # Development and Testing
 pytest==7.4.0               # Testing framework
 black==23.3.0               # Code formatting
 mypy==1.4.1                # Type checking
-pytest==7.4.0
-black==23.3.0
+pytest-asyncio==0.21.0     # Async testing support
+
+# Additional Dependencies
+pillow==10.0.0             # Image processing
+datetime                    # Date and time utilities
+python-jose==3.3.0         # JWT token handling
+passlib==1.7.4             # Password hashing
+bcrypt==4.0.1              # Password encryption
+
+# Streaming and Remote Data Support
+requests==2.31.0           # HTTP requests for remote data
+datasets==2.14.4           # HuggingFace datasets for streaming
+yt-dlp==2023.7.6           # YouTube video download (optional)
+aiohttp==3.8.5             # Async HTTP client
+websockets==11.0.3         # WebSocket support for real-time streaming
+tqdm==4.65.0               # Progress bars for downloads
